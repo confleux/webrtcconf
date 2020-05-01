@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Receiver</title>
+</head>
+<body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+    const socket = io();
+
+    socket.on('offerDescToReceiver', (data) => {
+      try {
+        const peerConn = new RTCPeerConnection();
+
+        peerConn.onicecandidate = (e) => {
+          console.log(e);
+        };
+
+        peerConn.setRemoteDescription(data.offerDesc);
+        console.log('Remote description has been defined');
+
+        const answer = peerConn.createAnswer();
+        console.log('Answer has been created');
+
+        answer.then((answerDesc) => {
+          peerConn.setLocalDescription(new RTCSessionDescription(answerDesc));
+          console.log('Local description has been defined');
+
+          socket.emit('answerDescToServer', {receiver: 'sender', receiverDesc: peerConn.localDescription});
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  </script>
+</body>
+</html>
