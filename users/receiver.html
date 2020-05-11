@@ -7,33 +7,71 @@
   <title>Receiver</title>
 </head>
 <body>
+
+  <video id="localVideo" autoplay></video>
+  <video id="remoteVideo" autoplay></video>
+
   <script src="/socket.io/socket.io.js"></script>
   <script type="text/javascript">
     const socket = io();
 
-    socket.on('offerDescToReceiver', (data) => {
-      try {
-        const peerConn = new RTCPeerConnection();
+    const remoteVideo = document.getElementById('remoteVideo');
+    const localVideo = document.getElementById('localVideo');
 
-        peerConn.onicecandidate = (e) => {
-          console.log(e);
+    let localStream;
+
+    const getLocalStream = () => {
+      return navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
+        localStream = stream;
+        localVideo.srcObject = stream;
+
+        console.log("Started");
+      });
+    };
+
+    const onAnswerCreated = (answerDesc, peerConn) => {
+      console.log('Answer has been created');
+
+      peerConn.setLocalDescription(new RTCSessionDescription(answerDesc)).then(() => {
+        console.log('Local description has been defined');
+
+        socket.emit('answerDescToServer', {receiver: 'sender', receiverDesc: peerConn.localDescription});
+      });
+    };
+
+    socket.on('offerDescToReceiver', (data) => {
+      const peerConn = new RTCPeerConnection();
+
+      const getLocalStreamPromise = getLocalStream().then(() => {
+        localStream.getTracks().forEach((track) => {
+          peerConn.addTrack(track, localStream);
+        });
+
+        socket.on('offerICECandidateToReceiver', (data) => {
+          console.log('ICE candidate has been defined');
+          peerConn.addIceCandidate(data);
+        });
+
+        peerConn.onicecandidate = (event) => {
+          if(event.candidate !== null) {
+            socket.emit('answerICECandidateToServer', event.candidate);
+          }
         };
+
+        peerConn.addEventListener('track', (e) => {
+          remoteVideo.srcObject = e.streams[0];
+        });
 
         peerConn.setRemoteDescription(data.offerDesc);
         console.log('Remote description has been defined');
 
-        const answer = peerConn.createAnswer();
-        console.log('Answer has been created');
-
-        answer.then((answerDesc) => {
-          peerConn.setLocalDescription(new RTCSessionDescription(answerDesc));
-          console.log('Local description has been defined');
-
-          socket.emit('answerDescToServer', {receiver: 'sender', receiverDesc: peerConn.localDescription});
+        const answer = peerConn.createAnswer({
+          offerToReceiveAudio: 1,
+          offerToReceiveVideo: 1
         });
-      } catch (e) {
-        console.error(e);
-      }
+
+        answer.then(answerDesc => onAnswerCreated(answerDesc, peerConn));
+      });
     });
   </script>
 </body>

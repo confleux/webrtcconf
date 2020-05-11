@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Unified</title>
+</head>
+<body>
+
+  <input type="text" id="senderUsernameInput">
+  <input type="text" id="receiverUsernameInput">
+
+  <button id="sendUsernameButton" >Set username</button>
+  <button id="getLocalStream" >Get local stream</button>
+  <button id="call" >Call</button>
+
+  <video id="localVideo" autoplay></video>
+  <video id="remoteVideo" autoplay></video>
+
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script src="./js/index.js"></script>
+
+  <script src="./js/offer.js"></script>
+  <script src="./js/answer.js"></script>
+
+  <script>
+  </script>
+</body>
+</html>
