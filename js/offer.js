@@ -1,4 +1,5 @@
-offer = () => {
+offer = (sender, receiver) => {
+  document.connectionsAmount++;
   getLocalStream().then(() => {
     const peerConn = new RTCPeerConnection();
 
@@ -12,11 +13,22 @@ offer = () => {
     });
 
     peerConn.onicecandidate = (event) => {
-       onIceCandidate(event, 'offer', senderUsernameInput.value, receiverUsernameInput.value);
+       onIceCandidate(event, 'offer', sender, receiver);
     };
 
+    const div = document.createElement('div');
+    div.id = `remoteVideoBlock${document.connectionsAmount}`;
+
+    document.body.appendChild(div);
+
+    const video = document.createElement('video');
+    video.id = `remoteVideo${document.connectionsAmount}`;
+    video.autoplay = true;
+
+    div.appendChild(video);
+
     peerConn.addEventListener('track', (e) => {
-      remoteVideo.srcObject = e.streams[0];
+      video.srcObject = e.streams[0];
     });
 
     const offer = peerConn.createOffer({
@@ -27,7 +39,7 @@ offer = () => {
 
       peerConn.setLocalDescription(new RTCSessionDescription(offerDesc)).then(() => {
         console.log('Local description has been defined');
-        socket.emit('offerDescToServer', {sender: senderUsernameInput.value, receiver: receiverUsernameInput.value, offerDesc: peerConn.localDescription});
+        socket.emit('offerDescToServer', {sender: sender, receiver: receiver, offerDesc: peerConn.localDescription});
 
         socket.on('answerDescToSender', (data) => {
           peerConn.setRemoteDescription(data.answerDesc);
@@ -37,5 +49,3 @@ offer = () => {
     });
   });
 };
-
-callButton.addEventListener('click', offer);

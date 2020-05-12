@@ -46,8 +46,6 @@ io.on('connection', (socket) => {
       };
     };
 
-    console.log(db);
-
     console.log('user disconnected');
   });
 

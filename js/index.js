@@ -1,10 +1,6 @@
 const socket = io();
 
-const localVideo = document.getElementById('localVideo');
-const remoteVideo = document.getElementById('remoteVideo');
-
-const senderUsernameInput = document.getElementById('senderUsernameInput');
-const receiverUsernameInput = document.getElementById('receiverUsernameInput');
+document.connectionsAmount = 0;
 
 let localStream;
 
@@ -26,10 +22,3 @@ const getLocalStream = () => {
     console.log("Got local stream");
   });
 };
-
-const getLocalStreamButton = document.getElementById('getLocalStream');
-const callButton = document.getElementById('call');
-const sendUsernameButton = document.getElementById('sendUsernameButton');
-
-getLocalStreamButton.addEventListener('click', getLocalStream);
-sendUsernameButton.addEventListener('click', sendUsername);
