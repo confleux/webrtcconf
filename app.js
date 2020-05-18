@@ -1,6 +1,8 @@
+const { app, BrowserWindow } = require('electron');
+
 const express = require('express');
-const app = express();
-const http = require('http').createServer(app);
+const a = express();
+const http = require('http').createServer(a);
 const io = require('socket.io')(http);
 
 const port = 3000;
@@ -16,17 +18,21 @@ const findIdByName = (name) => {
   };
 };
 
-app.use('/js', express.static('js'));
+app.whenReady().then(() => {
+  const win = new BrowserWindow({
+    width: 800,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
 
-app.get('/sender', (req, res) => {
-  res.sendFile(`${__dirname}/users/sender.html`);
+  win.loadFile('index.html');
 });
 
-app.get('/receiver', (req, res) => {
-  res.sendFile(`${__dirname}/users/receiver.html`);
-});
+a.use('/js', express.static('js'));
 
-app.get('/', (req, res) => {
+a.get('/', (req, res) => {
   res.sendFile(`${__dirname}/index.html`);
 });
 
