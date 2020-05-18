@@ -1,4 +1,12 @@
-const socket = io('http://localhost:3000');
+let socket;
+
+if (typeof process !== 'undefined' && typeof process.env.URL !== 'undefined') {
+  socket = io(process.env.URL);
+} else {
+  socket = io(window.location.href);
+};
+// console.log(process.env.URL);
+//const socket = io();
 
 document.connectionsAmount = 0;
 
@@ -18,6 +26,8 @@ const getLocalStream = () => {
   return navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
     localStream = stream;
     localVideo.srcObject = localStream;
+
+    console.log(stream);
 
     console.log("Got local stream");
   });

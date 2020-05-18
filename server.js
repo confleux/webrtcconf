@@ -1,8 +1,6 @@
-const { app, BrowserWindow } = require('electron');
-
 const express = require('express');
-const a = express();
-const http = require('http').createServer(a);
+const app = express();
+const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 
 const port = 3000;
@@ -18,21 +16,9 @@ const findIdByName = (name) => {
   };
 };
 
-app.whenReady().then(() => {
-  const win = new BrowserWindow({
-    width: 800,
-    height: 800,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
+app.use('/js', express.static('js'));
 
-  win.loadFile('index.html');
-});
-
-a.use('/js', express.static('js'));
-
-a.get('/', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(`${__dirname}/index.html`);
 });
 
@@ -76,6 +62,7 @@ io.on('connection', (socket) => {
   });
 });
 
-http.listen(port, () => {
+http.listen(port, '0.0.0.0', () => {
+  console.log(`Started: ${JSON.stringify(http.address())}`);
   console.log(`Listening on *:${port}`);
 });
