@@ -1,16 +1,20 @@
 const express = require('express');
 const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const https = require('https');
+const fs = require('fs');
 
 const port = 3000;
+const options = {
+  key: fs.readFileSync(`${__dirname}/SSL/server.key`),
+  cert: fs.readFileSync(`${__dirname}/SSL/server.cert`)
+};
 
 const db = [];
 
 const findIdByName = (name) => {
   for (let i = 0; i < db.length; i++) {
     if (db[i].username === name) {
-      return db[i].id
+      return db[i].id;
       break;
     };
   };
@@ -21,6 +25,13 @@ app.use('/js', express.static('js'));
 app.get('/', (req, res) => {
   res.sendFile(`${__dirname}/index.html`);
 });
+
+const server = https.createServer(options, app).listen(port, () => {
+  console.log(`Started`);
+});
+
+const io = require('socket.io')(server);
+
 
 io.on('connection', (socket) => {
 
@@ -60,9 +71,4 @@ io.on('connection', (socket) => {
     const id = findIdByName(data.receiver);
     io.to(id).emit('answerICECandidateToSender', {sender: data.sender, candidate: data.candidate});
   });
-});
-
-http.listen(port, '0.0.0.0', () => {
-  console.log(`Started: ${JSON.stringify(http.address())}`);
-  console.log(`Listening on *:${port}`);
 });

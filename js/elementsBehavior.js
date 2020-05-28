@@ -48,10 +48,14 @@ submitRoleButton.addEventListener('click', () => {
 });
 
 
-getLocalStreamButton.addEventListener('click', getLocalStream);
+getLocalStreamButton.addEventListener('click', () => {
+  getLocalStream().then(() => {
+    callButton.disabled = false;
+  });
+});
 
 
-callButton.addEventListener('click', () => {  
+callButton.addEventListener('click', () => {
   if (document.role === 'doctor') {
     offer('doctor', receiverUsernameInput.value);
   } else {
