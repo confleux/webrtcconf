@@ -1,18 +1,3 @@
-const usernameInput =  document.getElementById('usernameInput');
-
-const roleList = document.getElementById('roles');
-
-const roleChooseBlock = document.getElementById('roleChooseBlock');
-const localVideoBlock = document.getElementById('localVideoBlock');
-
-const submitRoleButton = document.getElementById('submitRoleButton');
-
-const receiverUsernameInput = document.getElementById('receiverUsernameInput');
-
-const getLocalStreamButton = document.getElementById('getLocalStreamButton');
-
-const callButton = document.getElementById('callButton');
-
 roleList.addEventListener('change', () => {
   if (roleList.value === 'doctor') {
     usernameInput.disabled = true;
@@ -49,7 +34,6 @@ submitRoleButton.addEventListener('click', () => {
 
 
 getLocalStreamButton.addEventListener('click', getLocalStream);
-
 
 callButton.addEventListener('click', () => {  
   if (document.role === 'doctor') {

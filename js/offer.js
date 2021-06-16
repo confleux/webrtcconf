@@ -27,7 +27,8 @@ offer = (sender, receiver) => {
 
     div.appendChild(video);
 
-    peerConn.addEventListener('track', (e) => {
+    peerConn.addEventListener('track', (e) => 
+    {
       video.srcObject = e.streams[0];
     });
 

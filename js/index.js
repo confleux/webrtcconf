@@ -15,10 +15,10 @@ const onIceCandidate = (event, path, sender, receiver) => {
 };
 
 const getLocalStream = () => {
-  return navigator.mediaDevices.getUserMedia({audio: true, video: true}).then((stream) => {
+  return navigator.mediaDevices.getUserMedia({audio: false, video: true}).then((stream) => {
+    console.log(stream);
     localStream = stream;
     localVideo.srcObject = localStream;
-
     console.log("Got local stream");
   });
 };

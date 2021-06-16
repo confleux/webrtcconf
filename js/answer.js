@@ -13,6 +13,7 @@ socket.on('offerDescToReceiver', (data) => {
     });
 
     peerConn.onicecandidate = (event) => {
+      console.log(event);
       if (document.role === 'doctor') {
         onIceCandidate(event, 'answer', document.role, data.sender);
       } else {
